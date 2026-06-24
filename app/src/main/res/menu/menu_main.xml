@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="jas.school.app.MainActivity">
+
+    <!-- MainActivity toolbar menu.
+         This file defines only the app-level entry action that opens the full-screen MenuUI. -->
+    <item
+        android:id="@+id/action_open_menu"
+        android:icon="@android:drawable/ic_menu_more"
+        android:orderInCategory="1"
+        android:title="@string/menu_title"
+        app:showAsAction="always" />
+</menu>

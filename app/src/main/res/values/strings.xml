@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Template</string>
+    <string name="menu_title">Menu</string>
+    <string name="menu_students">Students</string>
+    <string name="menu_sections">Sections</string>
+    <string name="menu_assign_students">Assign Students</string>
+</resources>

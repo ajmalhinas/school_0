@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="jas.school.app.MainActivity">
+    <!-- Reusable SearchUI toolbar menu.
+         ModelSearchUI registrations point to this file so every SearchUI screen gets the same SearchView action. -->
+    <item
+        android:id="@+id/txtsearch"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:showAsAction="always"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        />
+</menu>

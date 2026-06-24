@@ -1,0 +1,34 @@
+# Gradle & build system
+.gradle/
+build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+.srcx/
+local.properties
+
+# IDE files
+*.iml
+.idea/
+!.idea/vcs.xml
+!.idea/runConfigurations.xml
+!.idea/misc.xml
+!.idea/gradle.xml
+!.idea/compiler.xml
+!.idea/AndroidProjectSystem.xml
+.DS_Store
+
+# Android artifacts
+*.apk
+*.ap_
+*.dex
+*.class
+*.keystore
+
+# Logs
+*.log
+
+# Others
+*.swp
+*.swo
