@@ -1,166 +1,216 @@
-<div id="formView" class="view active">
-    <form id="contactForm">
-        <div class="form-header">
-            <button type="button" class="btn-text" onclick="showListView()">Cancel</button>
-            <h3 style="margin:0;">New Shop Check-In</h3>
-            <button type="submit" class="btn-text btn-save">Save</button>
-        </div>
-        
-        <div class="input-group">
-            <div class="input-row">
-                <label for="businessName">Shop Name</label>
-                <input type="text" id="businessName" required placeholder="ABC Store">
-            </div>
-            <div class="input-row">
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" required placeholder="0123456789">
-            </div>
-            <div class="input-row">
-                <label for="contact">Contact Person</label>
-                <input type="text" id="contact" placeholder="Owner Name">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <div class="input-row" style="flex-direction: column; align-items: flex-start;">
-                <label style="margin-bottom: 8px;">Shop Photo</label>
-                <input type="file" id="photoInput" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(event)">
-                <button type="button" class="btn-media" onclick="document.getElementById('photoInput').click()">📸 Take Photo</button>
-                <img id="imagePreview" style="display:none; width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px;">
-            </div>
-
-            <div class="input-row" style="flex-direction: column; align-items: flex-start;">
-                <label style="margin-bottom: 8px;">GPS Location</label>
-                <div style="display: flex; width: 100%; gap: 10px;">
-                    <input type="text" id="gpsInput" readonly placeholder="Waiting for GPS..." style="background: #e5e5ea; padding: 8px; border-radius: 5px;">
-                    <button type="button" class="btn-media" onclick="getLocation()" style="width: auto; background-color: #34c759;">📍 Refresh</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <div class="input-row" style="flex-direction: column; align-items: flex-start;">
-                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 8px;">
-                    <label>Remarks</label>
-                    <button type="button" id="voiceBtn" class="btn-voice" onclick="startSpeechRecognition()">🎤 Tap to Speak</button>
-                </div>
-                <textarea id="remarks" rows="3" placeholder="Type or use voice dictation..." style="width: 100%; border: 1px solid #e5e5ea; padding: 8px; border-radius: 8px; box-sizing: border-box;"></textarea>
-            </div>
-        </div>
-    </form>
-</div>
-
-<style>
-    /* New specific styles for mobile field app functionality */
-    .btn-media { background-color: #007aff; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; }
-    .btn-voice { background-color: #ff3b30; color: white; border: none; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .btn-voice.recording { background-color: #8e8e93; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.5; } }
-</style>
-
-<script>
-    let base64PhotoString = "";
-
-    // Automatically trigger GPS lookup when salesman opens this view
-    window.addEventListener('DOMContentLoaded', () => {
-        getLocation();
-    });
-
-    // 1. AUTO GPS LOCATION EXTRACTION
-    function getLocation() {
-        const gpsInput = document.getElementById('gpsInput');
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    gpsInput.value = `${lat}, ${lng}`;
-                },
-                (error) => {
-                    gpsInput.value = "Error getting location. Allow permissions.";
-                    console.error(error);
-                },
-                { enableHighAccuracy: true } // Forces phone to use hardware GPS rather than cell tower estimation
-            );
-        } else {
-            gpsInput.value = "GPS not supported by browser.";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Field Check-In</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        /* Mobile Reset & Fullscreen Lock */
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000; overflow: hidden; position: fixed;
         }
-    }
+        
+        /* Main Container setup for Mobile Screen layout */
+        .app-container {
+            display: flex; flex-direction: column; height: 100vh; width: 100vw;
+        }
 
-    // 2. IMAGE CAPTURE & BASE64 CONVERSION
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+        /* Top Section: Visual Capture (Camera Canvas) */
+        .camera-section {
+            flex: 1; background: #1c1c1e; position: relative;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        #imagePreview {
+            width: 100%; height: 100%; object-fit: cover; display: none;
+        }
+        .placeholder-text {
+            color: #aeaeLabel; text-align: center; font-size: 16px; padding: 20px;
+        }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imgElement = document.getElementById('imagePreview');
-            imgElement.src = e.target.result;
-            imgElement.style.display = "block";
+        /* OCR Processing Loader Overlay */
+        .ocr-loader {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); color: #fff; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10; font-weight: bold;
+        }
+
+        /* Bottom Section: iOS-style sliding Data Sheet */
+        .data-sheet {
+            background: #f2f2f7; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            padding: 20px; box-sizing: border-box; overflow-y: auto; max-height: 60%;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
+
+        .sheet-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        }
+        .sheet-title { font-size: 20px; font-weight: 700; color: #000; margin: 0; }
+        
+        /* Thumb-friendly Form Elements */
+        .input-group { background: #fff; border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
+        .input-row { 
+            display: flex; align-items: center; padding: 14px 16px; 
+            border-bottom: 1px solid #e5e5ea; 
+        }
+        .input-row:last-child { border-bottom: none; }
+        .input-row label { width: 100px; color: #8e8e93; font-size: 15px; font-weight: 500; }
+        .input-row input, .input-row textarea { 
+            flex: 1; border: none; outline: none; font-size: 16px; background: transparent; color: #000;
+        }
+
+        /* Primary Action Buttons */
+        .btn-capture {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #007aff; color: white; border: none; padding: 12px 24px;
+            border-radius: 25px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,122,255,0.4);
+            cursor: pointer; display: flex; align-items: center; gap: 8px; z-index: 5;
+        }
+        .btn-submit {
+            background: #34c759; color: white; border: none; width: 100%; padding: 16px;
+            border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 10px;
+        }
+        .btn-voice { background: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="camera-section">
+            <div id="ocrLoader" class="ocr-loader">
+                <div style="font-size: 24px; margin-bottom: 10px;">🔍</div>
+                <div id="loaderText">Scanning image data...</div>
+            </div>
             
-            // This variable holds the raw text string of the image to send to Google Sheet
-            base64PhotoString = e.target.result; 
-        };
-        reader.readAsDataURL(file);
-    }
+            <div id="placeholder" class="placeholder-text">
+                Tap button below to snap a picture of a business sign or card to auto-fill fields.
+            </div>
+            <img id="imagePreview" alt="Captured Shop">
+            
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="processImage(event)">
+            <button class="btn-capture" onclick="document.getElementById('cameraInput').click()">📸 Scan Shop / Card</button>
+        </div>
 
-    // 3. VOICE TO TEXT FUNCTION (Web Speech API)
-    function startSpeechRecognition() {
-        const voiceBtn = document.getElementById('voiceBtn');
-        const remarksField = document.getElementById('remarks');
-        
-        // Browser compatibility check
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Voice recognition is not supported on this device/browser. Please type manually.");
-            return;
+        <div class="data-sheet">
+            <div class="sheet-header">
+                <h3 class="sheet-title">Captured Details</h3>
+                <span id="gpsBadge" style="font-size:12px; background:#e5e5ea; padding:4px 8px; border-radius:10px; color:#555;">📍 Fetching GPS...</span>
+            </div>
+            
+            <form id="fieldForm">
+                <div class="input-group">
+                    <div class="input-row">
+                        <label for="bizName">Shop Name</label>
+                        <input type="text" id="bizName" required placeholder="Auto-filled from photo...">
+                    </div>
+                    <div class="input-row">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" placeholder="Auto-filled from photo...">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                        <div style="display:flex; justify-content:space-between; width:100%;">
+                            <label>Voice Remarks</label>
+                            <button type="button" class="btn-voice" onclick="startVoice()">🎤 Dictate</button>
+                        </div>
+                        <textarea id="remarks" rows="2" placeholder="Tap dictate to speak notes..."></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" id="gpsCoords">
+                <button type="submit" class="btn-submit">Save Entry to Sheet</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let base64Image = "";
+
+        // Get GPS automatically on load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(p => {
+                    document.getElementById('gpsCoords').value = `${p.coords.latitude}, ${p.coords.longitude}`;
+                    document.getElementById('gpsBadge').textContent = "📍 GPS Locked";
+                    document.getElementById('gpsBadge').style.background = "#34c759";
+                    document.getElementById('gpsBadge').style.color = "#fff";
+                }, () => {
+                    document.getElementById('gpsBadge').textContent = "📍 GPS Error";
+                }, { enableHighAccuracy: true });
+            }
+        });
+
+        // IMAGE PROCESSING AND LOCAL OCR ENGINE
+        async function processImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show preview layout
+            document.getElementById('placeholder').style.display = 'none';
+            const imgElement = document.getElementById('imagePreview');
+            imgElement.src = URL.createObjectURL(file);
+            imgElement.style.display = 'block';
+
+            // Show processing loader
+            document.getElementById('ocrLoader').style.display = 'flex';
+
+            // Convert image to Base64 to save later
+            const reader = new FileReader();
+            reader.onloadend = function() { base64Image = reader.result; };
+            reader.readAsDataURL(file);
+
+            try {
+                // Initialize Tesseract worker to parse the captured photo natively inside the browser
+                const worker = await Tesseract.createWorker('eng');
+                const ret = await worker.recognize(file);
+                const extractedText = ret.data.text;
+                await worker.terminate();
+
+                // Run smart regex extraction algorithms over the text
+                parseExtractedText(extractedText);
+            } catch (error) {
+                console.error("OCR Failed:", error);
+                alert("Could not extract text from image automatically.");
+            } finally {
+                document.getElementById('ocrLoader').style.display = 'none';
+            }
         }
 
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US'; // Set to localized code if needed, e.g., 'es-ES', 'hi-IN'
-        recognition.interimResults = false;
+        // SMART EXTRACTION PATTERNS (Regex Parsing)
+        function parseExtractedText(text) {
+            console.log("Raw Scanned Text:", text);
+            
+            // 1. Try to find phone numbers (looks for strings of 7-12 digits, hyphens, or brackets)
+            const phoneRegex = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
+            const foundPhones = text.match(phoneRegex);
+            if (foundPhones && foundPhones.length > 0) {
+                document.getElementById('phone').value = foundPhones[0].trim();
+            }
 
-        recognition.onstart = () => {
-            voiceBtn.textContent = "🛑 Listening...";
-            voiceBtn.classList.add('recording');
-        };
-
-        recognition.onerror = (err) => {
-            console.error(err);
-            stopRecognition();
-        };
-
-        recognition.onend = () => {
-            stopRecognition();
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            remarksField.value += (remarksField.value ? " " : "") + transcript;
-        };
-
-        function stopRecognition() {
-            voiceBtn.textContent = "🎤 Tap to Speak";
-            voiceBtn.classList.remove('recording');
+            // 2. Fallback logic for Shop Name estimation
+            // Usually, the first 1-2 distinct lines of text on a card or storefront are the brand name
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 3);
+            if (lines.length > 0) {
+                // Ignore lines containing common filler words or numbers if they are at the top
+                document.getElementById('bizName').value = lines[0];
+            }
         }
 
-        recognition.start();
-    }
-
-    // 4. SUBMIT UPDATE FOR FIELD VALUES
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const payload = {
-            businessName: document.getElementById('businessName').value,
-            phone: document.getElementById('phone').value,
-            contact: document.getElementById('contact').value,
-            photo: base64PhotoString, // Sent as a text block
-            gps: document.getElementById('gpsInput').value,
-            remarks: document.getElementById('remarks').value
-        };
-
-        // Reuse your existing standard fetch(WEB_APP_URL) POST request logic here...
-        console.log("Submitting data to Google Sheets:", payload);
-    });
-</script>
+        // NATIVE SPEECH DICTATION
+        function startVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return alert("Voice input not supported.");
+            const rec = new SpeechRecognition();
+            rec.onresult = (e) => {
+                document.getElementById('remarks').value += " " + e.results[0][0].transcript;
+            };
+            rec.start();
+        }
+    </script>
+</body>
+</html>
