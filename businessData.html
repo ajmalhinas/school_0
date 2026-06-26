@@ -7,23 +7,24 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* High-Contrast Sunlight Optimized Theme */
   :root {
-    --blue: #007AFF;
-    --green: #34C759;
-    --red: #FF3B30;
-    --orange: #FF9500;
-    --bg: #F2F2F7;
+    --blue: #0052CC;      /* Darker blue for readable contrast */
+    --green: #1A5C34;     /* Deep green text compliance */
+    --red: #D32F2F;       /* Visible alert red */
+    --orange: #E65100;
+    --bg: #FFFFFF;        /* Pure white eliminates matte reflection wash out */
     --card: #FFFFFF;
-    --label: #8E8E93;
-    --text: #1C1C1E;
-    --border: #E5E5EA;
-    --radius-card: 14px;
+    --label: #333333;     /* Darkened for strong contrast */
+    --text: #000000;      /* Absolute pitch black text */
+    --border: #000000;    /* Solid black borders instead of soft grays */
+    --radius-card: 12px;
     --radius-btn: 12px;
   }
 
   html, body {
     height: 100%; width: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
@@ -40,9 +41,7 @@
 
   /* Top bar */
   .topbar {
-    background: rgba(242,242,247,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: #FFFFFF;
     padding: 52px 20px 12px;
     position: sticky;
     top: 0;
@@ -50,22 +49,27 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 0.5px solid var(--border);
+    border-bottom: 2px solid var(--border);
   }
-  .topbar-title { font-size: 17px; font-weight: 600; }
+  .topbar-title { font-size: 18px; font-weight: 700; }
+  
+  /* Clickable GPS Badge Button */
   .gps-badge {
-    font-size: 12px;
-    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 12px;
     border-radius: 20px;
-    background: var(--border);
-    color: var(--label);
+    background: #EEEEEE;
+    border: 2px solid var(--border);
+    color: var(--text);
     display: flex; align-items: center; gap: 4px;
-    transition: background 0.3s, color 0.3s;
+    cursor: pointer;
+    transition: background 0.2s;
   }
+  .gps-badge:active { background: #CCCCCC; }
   .gps-badge.locked { background: #D4EDDA; color: #1A5C34; }
   .gps-badge.error  { background: #FFE5E5; color: #A32D2D; }
 
-  /* Body scroll area */
   .scroll-body {
     flex: 1;
     padding: 20px 16px;
@@ -74,20 +78,19 @@
     gap: 24px;
   }
 
-  /* Section header */
   .section-header {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--label);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 8px;
     padding-left: 4px;
   }
 
-  /* Card group */
   .card {
     background: var(--card);
+    border: 2px solid var(--border);
     border-radius: var(--radius-card);
     overflow: hidden;
   }
@@ -95,8 +98,8 @@
   .field-row {
     display: flex;
     align-items: center;
-    padding: 13px 16px;
-    border-bottom: 0.5px solid var(--border);
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--border);
     gap: 12px;
   }
   .field-row:last-child { border-bottom: none; }
@@ -105,29 +108,30 @@
     width: 32px; height: 32px;
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 18px;
     flex-shrink: 0;
+    border: 1px solid var(--border);
   }
   .field-icon.shop  { background: #E3F0FF; }
   .field-icon.phone { background: #E3FFE8; }
   .field-icon.loc   { background: #FFF3E3; }
-  .field-icon.note  { background: #F3E3FF; }
 
   .field-body { flex: 1; min-width: 0; }
-  .field-label { font-size: 12px; color: var(--label); margin-bottom: 2px; }
+  .field-label { font-size: 13px; font-weight: 700; color: var(--label); margin-bottom: 4px; }
   .field-input {
     width: 100%; border: none; outline: none;
-    font-size: 16px; color: var(--text);
+    font-size: 17px; font-weight: 600; color: var(--text);
     background: transparent;
     font-family: inherit;
-    padding: 0;
+    padding: 4px 0;
   }
-  .field-input::placeholder { color: #C7C7CC; }
+  .field-input::placeholder { color: #666666; font-weight: 400; }
   textarea.field-input { resize: none; line-height: 1.4; }
 
-  /* Scan strip */
+  /* Scan component */
   .scan-strip {
     background: var(--card);
+    border: 2px solid var(--border);
     border-radius: var(--radius-card);
     overflow: hidden;
   }
@@ -138,65 +142,66 @@
     padding: 16px;
     gap: 14px;
     cursor: pointer;
-    transition: background 0.15s;
+    background: #F0F4FF;
   }
-  .scan-hero:active { background: #F2F2F7; }
+  .scan-hero:active { background: #D0E0FF; }
 
   .scan-icon-wrap {
     width: 44px; height: 44px;
     border-radius: 12px;
     background: var(--blue);
+    border: 1px solid #000;
     display: flex; align-items: center; justify-content: center;
     font-size: 22px;
     flex-shrink: 0;
   }
   .scan-text-wrap { flex: 1; }
-  .scan-title { font-size: 15px; font-weight: 600; color: var(--blue); }
-  .scan-sub   { font-size: 13px; color: var(--label); margin-top: 2px; }
-  .scan-arrow { color: var(--label); font-size: 18px; }
+  .scan-title { font-size: 16px; font-weight: 700; color: var(--blue); }
+  .scan-sub   { font-size: 13px; color: #333333; font-weight: 500; margin-top: 2px; }
+  .scan-arrow { color: #000000; font-size: 22px; font-weight: 700; }
 
-  /* Thumbnail after scan */
   .thumb-row {
     display: none;
     align-items: center;
     gap: 12px;
-    padding: 0 16px 14px;
-    border-top: 0.5px solid var(--border);
+    padding: 14px 16px;
+    border-top: 2px solid var(--border);
+    background: #FAFFAF;
   }
   .thumb-row.visible { display: flex; }
 
   .thumb-img {
-    width: 52px; height: 52px;
+    width: 56px; height: 56px;
     object-fit: cover;
     border-radius: 8px;
-    border: 0.5px solid var(--border);
+    border: 2px solid var(--border);
     flex-shrink: 0;
   }
   .thumb-meta { flex: 1; min-width: 0; }
-  .thumb-status { font-size: 13px; font-weight: 500; }
+  .thumb-status { font-size: 14px; font-weight: 700; }
   .thumb-status.ok  { color: var(--green); }
   .thumb-status.err { color: var(--red); }
-  .thumb-hint { font-size: 12px; color: var(--label); margin-top: 2px; }
+  .thumb-hint { font-size: 12px; color: #000000; margin-top: 2px; }
 
   .btn-rescan {
-    font-size: 13px; color: var(--blue); font-weight: 500;
-    background: none; border: none; padding: 6px 0;
-    cursor: pointer; white-space: nowrap;
+    font-size: 14px; color: var(--blue); font-weight: 700;
+    background: #FFFFFF; border: 2px solid var(--blue); padding: 6px 12px;
+    border-radius: 6px; cursor: pointer; white-space: nowrap;
   }
 
-  /* Processing overlay inside strip */
   .scan-loader {
     display: none;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    border-top: 0.5px solid var(--border);
+    border-top: 2px solid var(--border);
+    background: #FFF9C4;
   }
   .scan-loader.active { display: flex; }
 
   .spinner {
-    width: 20px; height: 20px;
-    border: 2px solid var(--border);
+    width: 24px; height: 24px;
+    border: 3px solid #000000;
     border-top-color: var(--blue);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
@@ -204,71 +209,64 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .loader-text { font-size: 14px; color: var(--label); }
+  .loader-text { font-size: 14px; font-weight: 700; color: #000000; }
 
-  /* Voice row */
+  /* Dictation interface */
   .voice-row {
     display: flex;
-    align-items: flex-start;
-    padding: 13px 16px;
+    flex-direction: column;
+    padding: 14px 16px;
     gap: 12px;
   }
   .btn-voice {
-    flex-shrink: 0;
-    background: var(--red);
-    color: #fff;
-    border: none;
+    align-self: flex-start;
+    background: #E0E0E0;
+    color: #000000;
+    border: 2px solid #000000;
     border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 16px;
     cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
-    transition: opacity 0.15s;
-    margin-top: 16px;
+    display: flex; align-items: center; gap: 6px;
   }
-  .btn-voice:active { opacity: 0.7; }
-  .btn-voice.listening { background: var(--orange); }
+  .btn-voice.listening { background: var(--orange); color: #FFF; }
 
-  /* Submit */
+  /* Submit Action */
   .btn-submit {
     background: var(--blue);
-    color: #fff;
-    border: none;
+    color: #FFFFFF;
+    border: 2px solid #000000;
     border-radius: var(--radius-btn);
-    padding: 16px;
-    font-size: 17px;
-    font-weight: 600;
+    padding: 18px;
+    font-size: 18px;
+    font-weight: 700;
     width: 100%;
     cursor: pointer;
-    transition: opacity 0.15s;
-    letter-spacing: -0.01em;
+    box-shadow: 0 4px 0 #000000;
   }
-  .btn-submit:active { opacity: 0.8; }
-  .btn-submit.saved { background: var(--green); }
+  .btn-submit:active { transform: translateY(2px); box-shadow: 0 2px 0 #000000; }
+  .btn-submit.saved { background: var(--green); color: #FFF; }
 
-  /* Toast */
+  /* Alert Toasts */
   .toast {
     position: fixed;
     bottom: 32px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    background: rgba(40,40,40,0.92);
-    color: #fff;
-    padding: 12px 22px;
-    border-radius: 22px;
-    font-size: 14px;
-    font-weight: 500;
+    background: #000000;
+    color: #FFFFFF;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
     white-space: nowrap;
-    transition: transform 0.35s cubic-bezier(.34,1.5,.64,1), opacity 0.3s;
+    transition: transform 0.25s ease, opacity 0.2s;
     opacity: 0;
     z-index: 999;
-    backdrop-filter: blur(8px);
     pointer-events: none;
+    border: 2px solid #FFFFFF;
   }
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
   input[type="file"] { display: none; }
 </style>
@@ -276,15 +274,12 @@
 <body>
 
 <div class="page">
-
   <div class="topbar">
     <span class="topbar-title">Field Check-In</span>
-    <span class="gps-badge" id="gpsBadge">📍 Locating…</span>
+    <button class="gps-badge" id="gpsBadge" onclick="requestLocation()">📍 Locating…</button>
   </div>
 
   <div class="scroll-body">
-
-    <!-- Scan card -->
     <div>
       <div class="section-header">Auto-fill from photo</div>
       <div class="scan-strip">
@@ -313,7 +308,6 @@
       </div>
     </div>
 
-    <!-- Shop details -->
     <div>
       <div class="section-header">Shop details</div>
       <div class="card">
@@ -334,14 +328,13 @@
         <div class="field-row">
           <div class="field-icon loc">📍</div>
           <div class="field-body">
-            <div class="field-label">GPS coordinates</div>
-            <input class="field-input" id="gpsDisplay" type="text" placeholder="Auto-detected" readonly style="color: var(--label);">
+            <div class="field-label">GPS coordinates (Tap badge to refresh)</div>
+            <input class="field-input" id="gpsDisplay" type="text" placeholder="Auto-detecting..." readonly>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Remarks -->
     <div>
       <div class="section-header">Visit remarks</div>
       <div class="card">
@@ -355,11 +348,9 @@
       </div>
     </div>
 
-    <!-- Submit -->
     <div>
       <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">Save entry</button>
     </div>
-
   </div>
 </div>
 
@@ -372,40 +363,46 @@
 </form>
 
 <script>
-// GPS
-window.addEventListener('DOMContentLoaded', () => {
+// GPS Routine
+function requestLocation() {
   const badge = document.getElementById('gpsBadge');
+  badge.textContent = '📍 Updating...';
+  badge.className = 'gps-badge';
+
   if (!navigator.geolocation) {
     badge.textContent = '📍 Unavailable';
     badge.classList.add('error');
     return;
   }
+
   navigator.geolocation.getCurrentPosition(p => {
     const lat = p.coords.latitude.toFixed(5);
     const lng = p.coords.longitude.toFixed(5);
     document.getElementById('gpsCoords').value = `${lat}, ${lng}`;
     document.getElementById('gpsDisplay').value  = `${lat}, ${lng}`;
     badge.innerHTML = '📍 GPS locked';
-    badge.classList.add('locked');
+    badge.className = 'gps-badge locked';
+    showToast('Location updated!');
   }, () => {
     badge.textContent = '📍 GPS error';
-    badge.classList.add('error');
-  }, { enableHighAccuracy: true, timeout: 10000 });
-});
+    badge.className = 'gps-badge error';
+    showToast('Failed to acquire coordinates');
+  }, { enableHighAccuracy: true, timeout: 12000 });
+}
 
-// IMAGE PROCESSING via OCR.space free API
+window.addEventListener('DOMContentLoaded', requestLocation);
+
+// FIX: Updated OCR implementation handling your validation parameters correctly 
 async function processImage(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Show thumbnail immediately
   const objUrl = URL.createObjectURL(file);
   document.getElementById('thumbImg').src = objUrl;
 
-  // Show loader
   document.getElementById('thumbRow').classList.remove('visible');
   document.getElementById('scanLoader').classList.add('active');
-  document.getElementById('loaderText').textContent = 'Reading image…';
+  document.getElementById('loaderText').textContent = 'Processing image details…';
 
   try {
     const formData = new FormData();
@@ -414,67 +411,70 @@ async function processImage(event) {
     formData.append('isOverlayRequired', 'false');
     formData.append('detectOrientation', 'true');
     formData.append('scale', 'true');
-    formData.append('OCREngine', '2'); // More accurate engine
+    formData.append('OCREngine', '2'); 
 
     const res = await fetch('https://api.ocr.space/parse/image', {
       method: 'POST',
-      headers: { 'apikey': 'helloworld' }, // free public demo key
+      headers: { 'apikey': 'K87267227288957' }, // Production API Key
       body: formData
     });
 
-    if (!res.ok) throw new Error('OCR request failed');
+    if (!res.ok) throw new Error('Network error during analysis');
     const data = await res.json();
 
-    if (data.IsErroredOnProcessing) throw new Error(data.ErrorMessage || 'OCR error');
+    if (data.IsErroredOnProcessing || !data.ParsedResults) {
+      throw new Error(data.ErrorMessage || data.ErrorDetails || 'Image text analysis failed');
+    }
 
-    const text = (data.ParsedResults || []).map(r => r.ParsedText).join('\n');
+    const text = data.ParsedResults.map(r => r.ParsedText).join('\n');
+    
+    if(!text || text.trim() === "") {
+       throw new Error("No readable text found inside image");
+    }
+
     parseText(text);
 
-    // Success thumbnail state
-    document.getElementById('thumbStatus').textContent = '✓ Fields filled';
+    document.getElementById('thumbStatus').textContent = '✓ Data Extracted';
     document.getElementById('thumbStatus').className = 'thumb-status ok';
-    document.getElementById('thumbHint').textContent  = 'Review and edit if needed';
+    document.getElementById('thumbHint').textContent  = 'Please cross-verify form data.';
 
   } catch (err) {
-    console.error('OCR error:', err);
-    document.getElementById('thumbStatus').textContent = 'Scan failed — fill manually';
+    console.error('OCR error processing: ', err);
+    document.getElementById('thumbStatus').textContent = 'Analysis Failed';
     document.getElementById('thumbStatus').className = 'thumb-status err';
-    document.getElementById('thumbHint').textContent  = err.message || 'OCR unavailable';
+    document.getElementById('thumbHint').textContent  = err.message;
   } finally {
     document.getElementById('scanLoader').classList.remove('active');
     document.getElementById('thumbRow').classList.add('visible');
-    // Reset input so same image can be rescanned
     event.target.value = '';
   }
 }
 
 function parseText(text) {
-  if (!text || text.trim() === '') return;
-
-  // Phone — common formats
+  // Phone processing regex 
   const phoneRx = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g;
   const phones = text.match(phoneRx);
   if (phones && phones.length > 0) {
     document.getElementById('phone').value = phones[0].trim();
   }
 
-  // Shop name — first non-trivial line, skip if it looks like an address or phone
+  // Text line clean up for business validation
   const lines = text.split('\n')
     .map(l => l.trim())
     .filter(l => l.length > 2 && !/^\d+$/.test(l) && !/^[+\d\s\-()]+$/.test(l));
 
-  if (lines.length > 0 && !document.getElementById('bizName').value) {
+  if (lines.length > 0) {
     document.getElementById('bizName').value = lines[0];
   }
 }
 
-// VOICE
+// Voice Recognition Routine
 let recognition = null;
 let listening = false;
 
 function toggleVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { showToast('Voice input not supported on this browser'); return; }
+  if (!SR) { showToast('Speech profile unsupported in this browser'); return; }
 
   if (listening) {
     recognition && recognition.stop();
@@ -508,16 +508,15 @@ function stopListening() {
   btn.classList.remove('listening');
 }
 
-// SUBMIT
+// Form Submit Lifecycle
 function handleSubmit() {
   const name = document.getElementById('bizName').value.trim();
   if (!name) {
     document.getElementById('bizName').focus();
-    showToast('Enter a shop name first');
+    showToast('Shop Name field is required.');
     return;
   }
 
-  // Build row object (extend with your actual backend/sheet submission here)
   const entry = {
     shop: name,
     phone: document.getElementById('phone').value.trim(),
@@ -529,14 +528,14 @@ function handleSubmit() {
   console.log('Entry saved:', entry);
 
   const btn = document.getElementById('submitBtn');
-  btn.textContent = '✓ Saved';
+  btn.textContent = '✓ Saved Successfully';
   btn.classList.add('saved');
-  showToast('Entry saved');
+  showToast('Form data cached.');
 
   setTimeout(() => {
     btn.textContent = 'Save entry';
     btn.classList.remove('saved');
-    // Clear form for next entry
+    
     document.getElementById('bizName').value  = '';
     document.getElementById('phone').value    = '';
     document.getElementById('remarks').value  = '';
@@ -545,7 +544,6 @@ function handleSubmit() {
   }, 2000);
 }
 
-// TOAST
 function showToast(msg, duration = 2500) {
   const el = document.getElementById('toast');
   el.textContent = msg;
